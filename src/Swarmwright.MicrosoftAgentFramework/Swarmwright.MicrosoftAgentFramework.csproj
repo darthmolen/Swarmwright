@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>Microsoft Agent Framework adapter for Swarmwright: registers a singleton IChatClient backed by Azure OpenAI (AddSwarmwrightAzureOpenAI) or any OpenAI-compatible endpoint such as vLLM or Ollama (AddSwarmwrightOpenAI), wrapped in a Polly 429-retry ResilientChatClient.</Description>
+    <!-- MEAI001: AllowBackgroundResponses / response continuation in Microsoft.Extensions.AI are [Experimental]; used by the UseBackgroundResponses=true branch. -->
+    <!-- OPENAI001: OpenAIClient.GetResponsesClient() and AsIChatClient(ResponsesClient,string) are [Experimental]; same branch. -->
+    <!-- NU5104: transitive prerelease Azure.AI.OpenAI, pinned centrally. -->
+    <NoWarn>$(NoWarn);MEAI001;OPENAI001;NU5104</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Azure.AI.OpenAI" />
+    <PackageReference Include="Microsoft.Extensions.AI" />
+    <PackageReference Include="Microsoft.Extensions.AI.OpenAI" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <PackageReference Include="Polly" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Swarmwright.Abstractions\Swarmwright.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Swarmwright.MicrosoftAgentFramework.Tests" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,14 @@
+key: microsoft-deep-research
+name: Microsoft Deep Research Team
+description: Specialized team for Microsoft ecosystem research — uses the official learn.microsoft.com MCP server for authoritative docs, licensing, and Azure integration guidance
+allow_default_tools: true
+goal_template: |
+  Assemble a Microsoft-focused research team to: {user_input}
+
+  Create four specialists that run in parallel:
+  - a Microsoft documentation researcher (uses learn.microsoft.com),
+  - a skeptical reviewer (contrarian analysis of Microsoft's claims and coverage gaps),
+  - a licensing/SKU analyst (plans, service buckets, per-seat costs),
+  - an Azure integration specialist (Entra ID, compliance, cross-product wiring).
+
+  All four tasks are independent; the leader synthesizes into a final research report.

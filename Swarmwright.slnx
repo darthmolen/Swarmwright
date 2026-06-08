@@ -1,0 +1,21 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Swarmwright.Abstractions/Swarmwright.Abstractions.csproj" />
+    <Project Path="src/Swarmwright.AspNetCore/Swarmwright.AspNetCore.csproj" />
+    <Project Path="src/Swarmwright.Database.Postgres/Swarmwright.Database.Postgres.csproj" />
+    <Project Path="src/Swarmwright.Database.Sqlite/Swarmwright.Database.Sqlite.csproj" />
+    <Project Path="src/Swarmwright.McpServer/Swarmwright.McpServer.csproj" />
+    <Project Path="src/Swarmwright.MicrosoftAgentFramework/Swarmwright.MicrosoftAgentFramework.csproj" />
+    <Project Path="src/Swarmwright.Templates.AzureSolutionsAgent/Swarmwright.Templates.AzureSolutionsAgent.csproj" />
+    <Project Path="src/Swarmwright.Templates.DeepResearch/Swarmwright.Templates.DeepResearch.csproj" />
+    <Project Path="src/Swarmwright.Templates.MicrosoftDeepResearch/Swarmwright.Templates.MicrosoftDeepResearch.csproj" />
+    <Project Path="src/Swarmwright.Workflows/Swarmwright.Workflows.csproj" />
+    <Project Path="src/Swarmwright/Swarmwright.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Swarmwright.Example.WebHost.IntegrationTests/Swarmwright.Example.WebHost.IntegrationTests.csproj" />
+    <Project Path="tests/Swarmwright.Example.WebHost/Swarmwright.Example.WebHost.csproj" />
+    <Project Path="tests/Swarmwright.Tests/Swarmwright.Tests.csproj" />
+    <Project Path="tests/Swarmwright.Workflows.Tests/Swarmwright.Workflows.Tests.csproj" />
+  </Folder>
+</Solution>

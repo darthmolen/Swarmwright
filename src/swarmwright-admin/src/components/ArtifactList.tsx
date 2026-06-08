@@ -1,0 +1,62 @@
+import { useCallback } from 'react';
+import type { FileInfo } from '../types/swarm';
+import { useAuthToken } from '../auth/useAuthToken';
+
+const API_BASE = import.meta.env.VITE_API_URL ?? '';
+
+interface ArtifactListProps {
+  files: FileInfo[];
+  activeFile: string | null;
+  onSelect: (path: string) => void;
+  swarmId?: string;
+}
+
+export function ArtifactList({ files, activeFile, onSelect, swarmId }: ArtifactListProps) {
+  const { getToken } = useAuthToken();
+
+  const getAuthHeaders = useCallback(async (): Promise<Record<string, string>> => {
+    const token = await getToken();
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  }, [getToken]);
+
+  async function handleDownloadZip() {
+    if (!swarmId) return;
+    const headers = await getAuthHeaders();
+    fetch(`${API_BASE}/api/swarm/${swarmId}/artifacts/download-zip`, { headers })
+      .then((res) => res.blob())
+      .then((blob) => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${swarmId}.zip`;
+        a.click();
+        URL.revokeObjectURL(url);
+      })
+      .catch(() => null);
+  }
+
+  return (
+    <div className="artifact-list">
+      {files.length === 0 && (
+        <div className="artifact-empty">No files yet</div>
+      )}
+      {files.map((f) => (
+        <button
+          key={f.path}
+          className={`artifact-item ${f.path === activeFile ? 'artifact-item--active' : ''}`}
+          onClick={() => onSelect(f.path)}
+          title={f.path}
+        >
+          <span className="artifact-icon">{f.name.endsWith('.md') ? '📄' : '📎'}</span>
+          <span className="artifact-name">{f.name}</span>
+        </button>
+      ))}
+      {swarmId && (
+        <button className="artifact-item" onClick={handleDownloadZip} title="Download all files as ZIP">
+          <span className="artifact-icon">📦</span>
+          <span className="artifact-name">Download ZIP</span>
+        </button>
+      )}
+    </div>
+  );
+}
