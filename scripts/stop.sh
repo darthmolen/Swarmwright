@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Stop the AgentMemoryOS local-dev stack.
+# Stop the Swarmwright local-dev stack.
 #
 # Usage:
 #   ./scripts/stop.sh             # stop containers, keep data volumes
@@ -13,7 +13,7 @@ cd "$(dirname "$0")/.."
 DOWN_ARGS=(--profile gpu down)
 if [[ "${1:-}" == "--volumes" ]]; then
   DOWN_ARGS+=(--volumes)
-  echo "Stopping stack and removing named volumes (pgdata, redisdata, hfcache)..."
+  echo "Stopping stack and removing named volumes (pgdata, hfcache)..."
 else
   echo "Stopping stack (volumes preserved)..."
 fi

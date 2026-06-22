@@ -1,42 +1,29 @@
-# Local-dev stack for AgentMemoryOS.
+# Local-dev stack for Swarmwright.
 # Values are interpolated from .env (see .env.example); every variable also has an inline
 # default, so `docker compose up` works even without a .env file.
 #
-# Default `docker compose up` starts ONLY postgres + redis (the in-memory dev path).
-# The vLLM model server is opt-in behind the `gpu` profile:
+# Default `docker compose up` starts ONLY postgres (optional — the app defaults to the InMemory
+# provider). The vLLM model server is opt-in behind the `gpu` profile:
 #   docker compose --profile gpu up -d
+name: swarmwright
+
 services:
-  # PostgreSQL with the pgvector extension for vector-backed memory storage.
+  # PostgreSQL for the EF Core "PostgreSQL" provider (optional; the app defaults to InMemory).
   postgres:
-    image: pgvector/pgvector:pg17
+    image: postgres:17
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-agentmemory}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-agentmemory}
-      POSTGRES_DB: ${POSTGRES_DB:-agentmemory}
+      POSTGRES_USER: ${POSTGRES_USER:-swarmwright}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-swarmwright}
+      POSTGRES_DB: ${POSTGRES_DB:-swarmwright}
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     networks:
-      - memory
+      - swarmwright
     healthcheck:
       # $$ escapes to a literal $, so POSTGRES_USER is read from the container's env at runtime.
-      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-agentmemory}"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
-
-  # Redis for optional caching / Redis-backed features.
-  redis:
-    image: redis:7-alpine
-    ports:
-      - "${REDIS_PORT:-6379}:6379"
-    volumes:
-      - redisdata:/data
-    networks:
-      - memory
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-swarmwright}"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -70,7 +57,7 @@ services:
     volumes:
       - hfcache:/root/.cache/huggingface
     networks:
-      - memory
+      - swarmwright
     deploy:
       resources:
         reservations:
@@ -86,10 +73,9 @@ services:
       start_period: 120s
 
 networks:
-  memory:
+  swarmwright:
     driver: bridge
 
 volumes:
   pgdata:
-  redisdata:
   hfcache:

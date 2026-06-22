@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Start the AgentMemoryOS local-dev stack.
+# Start the Swarmwright local-dev stack.
 #
 # Usage:
-#   ./scripts/start.sh          # postgres + redis only (in-memory dev path)
+#   ./scripts/start.sh          # postgres only
 #   ./scripts/start.sh --gpu    # also start the vLLM model server (gpu profile)
 
 cd "$(dirname "$0")/.."
@@ -59,11 +59,6 @@ docker compose "${COMPOSE_ARGS[@]}"
 # Core services.
 wait_for "postgres" 120 docker compose exec -T postgres pg_isready -U "${POSTGRES_USER}"
 
-redis_ping() {
-  [[ "$(docker compose exec -T redis redis-cli ping 2>/dev/null | tr -d '\r')" == "PONG" ]]
-}
-wait_for "redis" 120 redis_ping
-
 if [[ "$GPU" == true ]]; then
   echo "Note: the first run downloads and loads the model; this can take several minutes."
   vllm_ready() {
@@ -75,8 +70,7 @@ fi
 
 echo ""
 echo "Stack is up. Endpoints:"
-echo "  Postgres : ${POSTGRES_CONNECTION:-Host=localhost;Port=${POSTGRES_PORT:-5432}}"
-echo "  Redis    : localhost:${REDIS_PORT:-6379}"
+echo "  Postgres : localhost:${POSTGRES_PORT:-5432}"
 if [[ "$GPU" == true ]]; then
   echo "  vLLM     : http://localhost:${VLLM_PORT:-8000}/v1  (model: ${VLLM_MODEL:-?})"
 else

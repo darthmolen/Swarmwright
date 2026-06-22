@@ -1,14 +1,13 @@
 # Local-dev scripts
 
-Helpers for the AgentMemoryOS local-dev infrastructure. They wrap the
+Helpers for the Swarmwright local-dev infrastructure. They wrap the
 `docker-compose.yml` at the repo root and read configuration from `.env`
 (copy `.env.example` to `.env` first, or let `start.sh` do it for you).
 
 ## Default path vs `--gpu` path
 
-- **Default (`./scripts/start.sh`)** starts only **postgres** (pgvector) and
-  **redis**. This is the in-memory dev path (`MEMORY_STORE=inmemory`) and needs
-  no GPU.
+- **Default (`./scripts/start.sh`)** starts only **postgres** (optional — the
+  app defaults to the InMemory provider). Needs no GPU.
 - **`--gpu` (`./scripts/start.sh --gpu`)** additionally starts the **vLLM**
   OpenAI-compatible model server (the compose `gpu` profile). The first run
   downloads and loads the model, which can take several minutes.
@@ -17,13 +16,13 @@ Helpers for the AgentMemoryOS local-dev infrastructure. They wrap the
 
 - **`start.sh`** — Brings the stack up with `docker compose up -d`. Creates
   `.env` from `.env.example` if missing, then polls health until postgres
-  (`pg_isready`), redis (`redis-cli ping` → `PONG`), and — with `--gpu` — the
-  vLLM `/v1/models` endpoint are ready. Prints a summary of endpoints.
-  - `./scripts/start.sh` — postgres + redis only.
+  (`pg_isready`) and — with `--gpu` — the vLLM `/v1/models` endpoint are ready.
+  Prints a summary of endpoints.
+  - `./scripts/start.sh` — postgres only.
   - `./scripts/start.sh --gpu` — also start the vLLM model server.
 - **`stop.sh`** — `docker compose down`. Preserves named volumes by default.
   - `./scripts/stop.sh` — stop containers, keep data.
-  - `./scripts/stop.sh --volumes` — stop and remove volumes (pgdata, redisdata, hfcache).
+  - `./scripts/stop.sh --volumes` — stop and remove volumes (pgdata, hfcache).
 - **`serve-model.sh`** — Runs vLLM standalone via `docker run` (outside compose)
   for when you want the model server on its own. Reads `VLLM_*` and
   `HUGGING_FACE_HUB_TOKEN` from the environment with sensible defaults.
@@ -33,10 +32,10 @@ Helpers for the AgentMemoryOS local-dev infrastructure. They wrap the
 `start.cmd`, `stop.cmd`, and `serve-model.cmd` are batch equivalents for running the
 stack from a Windows terminal (PowerShell or cmd) without WSL — Docker Desktop puts
 `docker` on the Windows PATH and forwards published container ports to Windows
-`localhost` (postgres 5432, redis 6379, vLLM 8000). Same arguments as the shell scripts:
+`localhost` (postgres 5432, vLLM 8000). Same arguments as the shell scripts:
 
 ```bat
-scripts\start.cmd            :: postgres + redis
+scripts\start.cmd            :: postgres only
 scripts\start.cmd --gpu      :: also start vLLM
 scripts\stop.cmd             :: stop, keep volumes
 scripts\stop.cmd --volumes   :: stop and remove volumes
