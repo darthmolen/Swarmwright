@@ -8,8 +8,13 @@ export default defineConfig(({ mode }) => {
     base: env.VITE_BASE_PATH || '/',
     plugins: [react()],
     server: {
+      // Standalone SPA dev server (HMR). Browse this port during `npm run dev`; API calls to
+      // /api/* are proxied to the example web host (Kestrel) below.
+      port: 5173,
       proxy: {
         '/api': {
+          // Must match the web host's HTTPS port in
+          // tests/Swarmwright.Example.WebHost/Properties/launchSettings.json.
           target: 'https://localhost:7001',
           secure: false,
           changeOrigin: true,
