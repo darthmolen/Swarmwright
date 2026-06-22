@@ -28,6 +28,23 @@ Helpers for the AgentMemoryOS local-dev infrastructure. They wrap the
   for when you want the model server on its own. Reads `VLLM_*` and
   `HUGGING_FACE_HUB_TOKEN` from the environment with sensible defaults.
 
+## Windows (Docker Desktop)
+
+`start.cmd`, `stop.cmd`, and `serve-model.cmd` are batch equivalents for running the
+stack from a Windows terminal (PowerShell or cmd) without WSL — Docker Desktop puts
+`docker` on the Windows PATH and forwards published container ports to Windows
+`localhost` (postgres 5432, redis 6379, vLLM 8000). Same arguments as the shell scripts:
+
+```bat
+scripts\start.cmd            :: postgres + redis
+scripts\start.cmd --gpu      :: also start vLLM
+scripts\stop.cmd             :: stop, keep volumes
+scripts\stop.cmd --volumes   :: stop and remove volumes
+```
+
+If you have a WSL distro with Docker Desktop integration, running the `.sh` scripts in
+WSL works just as well — the ports still front through to Windows `localhost`.
+
 ## Blackwell / RTX 5090 (sm_120) caveat
 
 Pre-built `vllm/vllm-openai` images may not include `sm_120` kernels and can
