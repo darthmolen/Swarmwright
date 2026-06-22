@@ -44,6 +44,27 @@ scripts\stop.cmd --volumes   :: stop and remove volumes
 If you have a WSL distro with Docker Desktop integration, running the `.sh` scripts in
 WSL works just as well — the ports still front through to Windows `localhost`.
 
+## Configuring the example host (`set-user-secrets.ps1`)
+
+The .NET app does **not** read `.env` — it uses `appsettings.json`, environment variables, and
+`dotnet user-secrets`. To run `tests/Swarmwright.Example.WebHost` without an "AzureOpenAI
+configuration section is missing" error, populate user-secrets from `.env`:
+
+```powershell
+# Azure OpenAI / Foundry path (default) — uses MAF_AIF_* from .env
+pwsh ./scripts/set-user-secrets.ps1
+
+# Local vLLM path — uses VLLM_* from .env (start the model first: scripts\start.cmd --gpu)
+pwsh ./scripts/set-user-secrets.ps1 -Provider vllm
+```
+
+It writes `AzureOpenAI:Endpoint/ApiKey/DeploymentName` (azure) or `OpenAI:Endpoint/Model/ApiKey`
+(vllm) into the host's per-user secret store (Development only; never committed). Then:
+
+```powershell
+dotnet run --project tests/Swarmwright.Example.WebHost   # browse https://localhost:7001
+```
+
 ## Blackwell / RTX 5090 (sm_120) caveat
 
 Pre-built `vllm/vllm-openai` images may not include `sm_120` kernels and can

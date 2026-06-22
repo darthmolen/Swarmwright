@@ -5,6 +5,9 @@
     <!-- App host, not a library: top-level statements are intentional (IDE0211); minimal-hosting
          Program is implicitly accessible to WebApplicationFactory in .NET 10 (no partial needed). -->
     <NoWarn>$(NoWarn);CS1591;CA1515;IDE0211;ASP0027</NoWarn>
+    <!-- Enables `dotnet user-secrets` for this host (loaded in the Development environment). Populate
+         from .env with scripts/set-user-secrets.ps1. -->
+    <UserSecretsId>77978fd1-167b-4122-9e18-4d422e1ddfc9</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
