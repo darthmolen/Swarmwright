@@ -10,7 +10,7 @@ Use the Swarm MCP Server when:
 
 - You want an AI agent (running in your host or elsewhere) to launch and supervise swarms by calling MCP tools instead of your REST API.
 - You need a structured, typed contract for swarm operations that tool-calling models can discover via `tools/list`.
-- You already have swarm orchestration wired up via `AddAISwarm(...)` and want to expose it to agents without building a custom adapter.
+- You already have swarm orchestration wired up via `AddSwarmwright(...)` and want to expose it to agents without building a custom adapter.
 
 If you only need a human UI, use [Swarm Admin](admin.md) instead — that is the React SPA.
 
@@ -26,16 +26,16 @@ The server lives at `src/Swarmwright.McpServer`. Reference it from your host's `
 <ProjectReference Include="..\..\src\Swarmwright.McpServer\Swarmwright.McpServer.csproj" />
 ```
 
-It depends on `Swarmwright`, which you should already reference if you are calling `AddAISwarm`.
+It depends on `Swarmwright`, which you should already reference if you are calling `AddSwarmwright`.
 
 ### 2. Register Services
 
-After `AddAISwarm`, register the MCP server:
+After `AddSwarmwright`, register the MCP server:
 
 ```csharp
 using Swarmwright.McpServer.Extensions;
 
-builder.Services.AddAISwarm(builder.Configuration, builder.Environment);
+builder.Services.AddSwarmwright(builder.Configuration, builder.Environment);
 builder.Services.AddSwarmMcpServer(builder.Configuration);
 ```
 

@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Cancel superseded runs on the same ref.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  dotnet:
+    name: .NET build & test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Restore
+        run: dotnet restore
+
+      # Skip the admin SPA build here (validated in the `spa` job); the .NET job stays Node-free.
+      # Warnings are errors via TreatWarningsAsErrors, so a clean build is a real gate.
+      - name: Build
+        run: dotnet build --no-restore -c Release -p:SkipSpaBuild=true
+
+      - name: Test
+        run: dotnet test --no-build -c Release -p:SkipSpaBuild=true
+
+  spa:
+    name: Admin SPA build & test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: src/swarmwright-admin
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: src/swarmwright-admin/package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Test
+        run: npm test

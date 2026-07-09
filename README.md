@@ -5,7 +5,9 @@ A **framework-agnostic multi-agent swarm toolkit** for .NET 10 / C#.
 Swarmwright is the coordination layer for agent *swarms* — the plumbing that turns a pile of
 individual AI agents into a governed system that gets work done. It provides the orchestration
 patterns, the durable state, the HTTP/MCP surface, and an admin UI, while staying independent of
-any single agent framework: your agents plug in through a thin adapter.
+any single agent framework: your agents plug in through a thin adapter. Concretely, that adapter is
+an `IChatClient` (`Microsoft.Extensions.AI`) — see [docs/abstractions.md](docs/abstractions.md) for
+exactly what a model or persistence adapter has to implement.
 
 > **Status: early development.** The core orchestration engine, persistence, HTTP/SSE API, MCP
 > server, and admin SPA are in place and covered by tests. Public API surface is still firming up
@@ -23,6 +25,15 @@ Swarmwright models three swarm shapes on top of a common engine:
 - **Continuous background swarms** — queue-drained workers for long-running reconciliation,
   compaction, and enrichment.
 
+What sets a Swarmwright swarm apart from a fixed workflow or a single planner agent is **how the
+plan is formed**. For each goal the leader agent emits an explicit task **DAG** — tasks with declared
+`blockedByIndices` dependencies — so independent work runs in parallel and the whole plan is
+inspectable *before* execution. Unlike a static workflow graph (wired at author time), the DAG is
+generated per prompt; unlike a free-form planner that keeps a prose ledger, it is a structured
+artifact constrained by the template's declared roles and tools. You get the adaptivity of an LLM
+planner with the legibility and parallelism of a declared graph — and, because the template is
+versioned, a bound on what the leader can produce.
+
 Around that engine it ships:
 
 - A **REST + Server-Sent Events API** (`MapSwarmEndpoints`) for driving and observing swarms.
@@ -37,9 +48,9 @@ Around that engine it ships:
 
 | Project | Purpose |
 | --- | --- |
-| `src/Swarmwright.Abstractions` | Swarm/agent interfaces + DTOs. No logic. |
+| `src/Swarmwright.Abstractions` | Tool-authoring contracts (`ICustomToolProvider`, `[SwarmTool]`). Dependency-light, no logic. |
 | `src/Swarmwright` | Orchestration engine, swarm primitives, background pipeline, DI. |
-| `src/Swarmwright.AspNetCore` | REST + SSE endpoints, `Swarm.Read`/`Swarm.Write` policies, `/api/spa-config`, the `AddAISwarm` one-call registration. |
+| `src/Swarmwright.AspNetCore` | REST + SSE endpoints, `Swarm.Read`/`Swarm.Write` policies, `/api/spa-config`, the `AddSwarmwright` one-call registration. |
 | `src/Swarmwright.McpServer` | Swarm operations exposed as MCP tools. |
 | `src/Swarmwright.MicrosoftAgentFramework` | Adapter for the Microsoft Agent Framework. |
 | `src/Swarmwright.Database.Sqlite` / `.Postgres` | EF Core persistence providers. |
@@ -125,6 +136,7 @@ into any area:
 | --- | --- |
 | [docs/README.md](docs/README.md) | Swarm overview, when to use a swarm, built-in templates, and the doc index. |
 | [docs/swarm.md](docs/swarm.md) | **Start here for integration.** Program.cs wiring, configuration schema, work-directory isolation, auth policies, and the REST/SSE endpoints. |
+| [docs/abstractions.md](docs/abstractions.md) | The abstraction layer — the `IChatClient` model seam, persistence and extension points, and how to write a thin adapter. |
 | [docs/template.md](docs/template.md) | Authoring swarm templates — directory layout, YAML metadata, leader/worker prompts, task dependencies, placeholder substitution. |
 | [docs/template-custom-tools.md](docs/template-custom-tools.md) | Writing and registering custom domain-specific tools for your templates. |
 | [docs/mcp-server.md](docs/mcp-server.md) | The Swarm MCP server — 18 swarm operations as MCP tools, auth modes, and turn-based polling. |

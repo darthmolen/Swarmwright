@@ -30,7 +30,7 @@ the endpoints:
 var builder = WebApplication.CreateBuilder(args);
 
 // Service registration: LLM client, database, templates, hosted dispatcher, auth policies.
-builder.Services.AddAISwarm(builder.Configuration, builder.Environment);
+builder.Services.AddSwarmwright(builder.Configuration, builder.Environment);
 
 var app = builder.Build();
 
@@ -40,7 +40,7 @@ app.MapSwarmEndpoints(useSwarmPolicies: true);
 app.Run();
 ```
 
-`AddAISwarm` (in
+`AddSwarmwright` (in
 [`../src/Swarmwright.AspNetCore/Extensions/IServiceCollectionExtensions.cs`](../src/Swarmwright.AspNetCore/Extensions/IServiceCollectionExtensions.cs))
 is a convenience method that calls four registrations and, by default, scans loaded assemblies for
 custom tool providers:
@@ -52,14 +52,14 @@ custom tool providers:
 | `AddSwarmHttpServices` | The scoped services behind the HTTP surface (the refinement chat handler) |
 | `AddSwarmAuthorization` | The `Swarm.Read` and `Swarm.Write` authorization policies |
 
-Pass `discoverCustomToolProviders: false` to `AddAISwarm` to skip the automatic scan and register
+Pass `discoverCustomToolProviders: false` to `AddSwarmwright` to skip the automatic scan and register
 `ICustomToolProvider` implementations yourself. Set `useSwarmPolicies: false` on
 `MapSwarmEndpoints` to leave the endpoints anonymous during development (the parameter defaults to
 `false`).
 
 ### Program.cs (OpenAI-compatible endpoint, e.g. vLLM or Ollama)
 
-`AddAISwarm` binds Azure OpenAI. To talk to a local OpenAI-compatible server instead, register the
+`AddSwarmwright` binds Azure OpenAI. To talk to a local OpenAI-compatible server instead, register the
 `IChatClient` explicitly with `AddSwarmwrightOpenAI` and then call the same domain / HTTP / auth
 helpers directly:
 
@@ -77,7 +77,7 @@ Both LLM registrations are idempotent (`TryAddSingleton`), so whichever register
 first wins. The example host
 ([`../tests/Swarmwright.Example.WebHost/Program.cs`](../tests/Swarmwright.Example.WebHost/Program.cs))
 uses exactly this pattern: it registers the OpenAI-compatible client when `OpenAI:Endpoint` is set
-and otherwise falls back to `AddAISwarm` (Azure OpenAI).
+and otherwise falls back to `AddSwarmwright` (Azure OpenAI).
 
 ---
 
@@ -89,7 +89,7 @@ the `AzureAd` and `SpaConfiguration` sections (see [§6](#6-authentication--auth
 
 ### LLM backend
 
-`AddAISwarm` reads the top-level **`AzureOpenAI`** section
+`AddSwarmwright` reads the top-level **`AzureOpenAI`** section
 ([`AzureOpenAIOptions`](../src/Swarmwright.MicrosoftAgentFramework/Configuration/AzureOpenAIOptions.cs)):
 
 ```json
@@ -208,7 +208,7 @@ The swarm shares a single `IChatClient` across every agent — leader and worker
 are supported, both registered in
 [`../src/Swarmwright.MicrosoftAgentFramework/Extensions/ServiceCollectionExtensions.cs`](../src/Swarmwright.MicrosoftAgentFramework/Extensions/ServiceCollectionExtensions.cs):
 
-- **Azure OpenAI** (`AddSwarmwrightAzureOpenAI`, used by `AddAISwarm`) — reads the `AzureOpenAI`
+- **Azure OpenAI** (`AddSwarmwrightAzureOpenAI`, used by `AddSwarmwright`) — reads the `AzureOpenAI`
   section and invokes `AzureOpenAI:DeploymentName`.
 - **Any OpenAI-compatible endpoint** (`AddSwarmwrightOpenAI`) — vLLM, Ollama, LM Studio, or OpenAI
   itself, addressed by its served model name.
@@ -392,7 +392,7 @@ The hosted `SwarmDispatcherService` manages swarm execution:
 ```csharp
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddAISwarm(builder.Configuration, builder.Environment);
+builder.Services.AddSwarmwright(builder.Configuration, builder.Environment);
 
 var app = builder.Build();
 

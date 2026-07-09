@@ -7,18 +7,18 @@ namespace Swarmwright.Tests.Extensions;
 
 /// <summary>
 /// Tests for the custom tool provider auto-discovery pipeline triggered by
-/// <c>AddAISwarm</c>. Exercises the internal <c>DiscoverCustomToolProviders</c>
+/// <c>AddSwarmwright</c>. Exercises the internal <c>DiscoverCustomToolProviders</c>
 /// helper directly so tests don't depend on Swarm configuration.
 /// </summary>
 [TestClass]
 [TestCategory("Unit")]
-public sealed class AddAISwarmDiscoveryTests
+public sealed class AddSwarmwrightDiscoveryTests
 {
     /// <summary>
     /// A provider without the [SwarmToolProvider] attribute registers as Transient.
     /// </summary>
     [TestMethod]
-    public void AddAISwarm_DiscoversConcreteImplementations_DefaultTransientLifetime()
+    public void AddSwarmwright_DiscoversConcreteImplementations_DefaultTransientLifetime()
     {
         var services = new ServiceCollection();
 
@@ -36,7 +36,7 @@ public sealed class AddAISwarmDiscoveryTests
     /// A provider with [SwarmToolProvider(Scoped)] registers as Scoped.
     /// </summary>
     [TestMethod]
-    public void AddAISwarm_RespectsScopedLifetimeFromAttribute()
+    public void AddSwarmwright_RespectsScopedLifetimeFromAttribute()
     {
         var services = new ServiceCollection();
 
@@ -54,7 +54,7 @@ public sealed class AddAISwarmDiscoveryTests
     /// A provider with [SwarmToolProvider(Singleton)] registers as Singleton.
     /// </summary>
     [TestMethod]
-    public void AddAISwarm_RespectsSingletonLifetimeFromAttribute()
+    public void AddSwarmwright_RespectsSingletonLifetimeFromAttribute()
     {
         var services = new ServiceCollection();
 
@@ -72,7 +72,7 @@ public sealed class AddAISwarmDiscoveryTests
     /// The abstract <see cref="CustomToolProvider"/> base class is NOT registered.
     /// </summary>
     [TestMethod]
-    public void AddAISwarm_SkipsAbstractTypes()
+    public void AddSwarmwright_SkipsAbstractTypes()
     {
         var services = new ServiceCollection();
 
@@ -87,7 +87,7 @@ public sealed class AddAISwarmDiscoveryTests
     /// If a consumer manually registers a provider, discovery does not add a duplicate.
     /// </summary>
     [TestMethod]
-    public void AddAISwarm_DoesNotDuplicateManualRegistration()
+    public void AddSwarmwright_DoesNotDuplicateManualRegistration()
     {
         var services = new ServiceCollection();
 
@@ -110,7 +110,7 @@ public sealed class AddAISwarmDiscoveryTests
     /// This test pairs with the opt-out test below to confirm discovery actually runs.
     /// </summary>
     [TestMethod]
-    public void AddAISwarm_WithDiscoveryDisabled_SkipsScan()
+    public void AddSwarmwright_WithDiscoveryDisabled_SkipsScan()
     {
         var services = new ServiceCollection();
 

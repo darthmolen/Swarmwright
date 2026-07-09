@@ -48,7 +48,7 @@ public static class IServiceCollectionExtensions
     /// Manual registrations always win: discovered types that are already registered are skipped.
     /// </param>
     /// <returns>The service collection for chaining.</returns>
-    public static IServiceCollection AddAISwarm(
+    public static IServiceCollection AddSwarmwright(
         this IServiceCollection services,
         IConfiguration configuration,
         IHostEnvironment hostingEnvironment,
@@ -74,7 +74,7 @@ public static class IServiceCollectionExtensions
     /// <summary>
     /// Registers the ASP.NET-scoped Swarm services that back the HTTP surface — currently the
     /// refinement chat handler. Call this (with <c>AddSwarmAuthorization</c>) when composing the
-    /// swarm manually instead of via <see cref="AddAISwarm"/> (e.g. a host wiring a non-Azure
+    /// swarm manually instead of via <see cref="AddSwarmwright"/> (e.g. a host wiring a non-Azure
     /// <c>IChatClient</c>).
     /// </summary>
     /// <param name="services">The service collection.</param>

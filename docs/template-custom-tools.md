@@ -13,7 +13,7 @@ For template authoring fundamentals (frontmatter, workers, skills), see [templat
 3. Declare the DI lifetime at the class level with `[SwarmToolProvider(ServiceLifetime.X)]` — default is `Transient`.
 4. List the tool name in your worker's `custom_tools:` frontmatter.
 
-That's it. `AddAISwarm` auto-discovers your provider class — no manual DI registration needed.
+That's it. `AddSwarmwright` auto-discovers your provider class — no manual DI registration needed.
 
 ```csharp
 // DatabaseTools.cs
@@ -203,11 +203,11 @@ crash.
 
 ## 4. Registration — you don't have to do it
 
-Once you've defined a provider class, `AddAISwarm` picks it up automatically:
+Once you've defined a provider class, `AddSwarmwright` picks it up automatically:
 
 ```csharp
 // Program.cs
-builder.Services.AddAISwarm(builder.Configuration, builder.Environment);
+builder.Services.AddSwarmwright(builder.Configuration, builder.Environment);
 //      ↑ scans loaded assemblies for ICustomToolProvider implementations
 //        and registers each one with its attribute-declared lifetime.
 ```
@@ -219,7 +219,7 @@ No `services.AddScoped<ICustomToolProvider, DatabaseTools>()` call. No forgotten
 This only applies if you want total control of the registration. Pass `discoverCustomToolProviders: false` to opt out of auto-discovery:
 
 ```csharp
-builder.Services.AddAISwarm(builder.Configuration, builder.Environment, discoverCustomToolProviders: false);
+builder.Services.AddSwarmwright(builder.Configuration, builder.Environment, discoverCustomToolProviders: false);
 builder.Services.AddScoped<ICustomToolProvider, DatabaseTools>();   // you register explicitly
 ```
 
@@ -235,10 +235,10 @@ Even with discovery enabled, if you've already registered a specific type manual
 ```csharp
 // Register manually FIRST to pre-empt the scan:
 builder.Services.AddSingleton<ICustomToolProvider, DatabaseTools>();   // override the attribute's lifetime
-builder.Services.AddAISwarm(...);                                      // discovery sees the pre-registration and skips
+builder.Services.AddSwarmwright(...);                                      // discovery sees the pre-registration and skips
 ```
 
-Register *before* `AddAISwarm`. If you register the same type *after*, the discovery scan has already
+Register *before* `AddSwarmwright`. If you register the same type *after*, the discovery scan has already
 run and both registrations end up in the container.
 
 The rule: discovery checks `services.Any(sd => sd.ServiceType == typeof(ICustomToolProvider) && sd.ImplementationType == type)` before adding, and respects any existing registration.
@@ -323,7 +323,7 @@ Test assemblies often contain private provider classes that happen to implement 
 1. **Did you add `custom_tools: [my_tool]` to the worker's frontmatter?** Without this, the allowlist is empty and no custom tools are injected.
 2. **Does the `[SwarmTool("my_tool", ...)]` name match the frontmatter name exactly?** Names are case-sensitive ordinal compare.
 3. **Is the provider registered?** Run with debug logs — the orchestrator logs `Custom tool '{ToolName}' requested by worker '{WorkerName}' is not supplied by any registered ICustomToolProvider.` when a `custom_tools` entry matches nothing.
-4. **Are you calling `AddAISwarm` before the provider's assembly loads?** Auto-discovery scans `AppDomain.CurrentDomain.GetAssemblies()` — if your provider lives in an assembly that isn't loaded at the time of the scan, it's missed. In practice this only matters with lazy-loaded plugins; standard project references are always loaded at startup.
+4. **Are you calling `AddSwarmwright` before the provider's assembly loads?** Auto-discovery scans `AppDomain.CurrentDomain.GetAssemblies()` — if your provider lives in an assembly that isn't loaded at the time of the scan, it's missed. In practice this only matters with lazy-loaded plugins; standard project references are always loaded at startup.
 
 ### "I get `InvalidOperationException: Cannot consume scoped service ... from singleton ...`"
 
@@ -344,5 +344,5 @@ Last-registration-wins in iteration order. Rename one `[SwarmTool]` to a unique 
 - Attributes: [`SwarmToolAttribute`](../src/Swarmwright.Abstractions/Tools/SwarmToolAttribute.cs), [`SwarmToolProviderAttribute`](../src/Swarmwright.Abstractions/Tools/SwarmToolProviderAttribute.cs)
 - Run context: [`ISwarmRunContext`](../src/Swarmwright.Abstractions/Tools/ISwarmRunContext.cs)
 - Discovery pipeline: [`SwarmServiceExtensions.DiscoverCustomToolProviders`](../src/Swarmwright/Extensions/SwarmServiceExtensions.cs)
-- `AddAISwarm`: [`IServiceCollectionExtensions`](../src/Swarmwright.AspNetCore/Extensions/IServiceCollectionExtensions.cs)
+- `AddSwarmwright`: [`IServiceCollectionExtensions`](../src/Swarmwright.AspNetCore/Extensions/IServiceCollectionExtensions.cs)
 - Template authoring: [template.md](template.md)

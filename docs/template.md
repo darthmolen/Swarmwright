@@ -168,7 +168,7 @@ The whitelist is a **filter**, not an additive grant: it can only keep tools tha
 
 ### Adding Custom Tools
 
-Custom domain-specific tools (database queries, HTTP APIs, business logic) don't require forking the framework. Subclass `CustomToolProvider`, decorate methods with `[SwarmTool("name", "description")]`, and workers opt in via `custom_tools: [...]` in frontmatter. `AddAISwarm` auto-discovers `ICustomToolProvider` implementations and registers each one using the lifetime declared by its `[SwarmToolProvider(ServiceLifetime.X)]` attribute, so there's no separate DI registration step (manual registrations always win).
+Custom domain-specific tools (database queries, HTTP APIs, business logic) don't require forking the framework. Subclass `CustomToolProvider`, decorate methods with `[SwarmTool("name", "description")]`, and workers opt in via `custom_tools: [...]` in frontmatter. `AddSwarmwright` auto-discovers `ICustomToolProvider` implementations and registers each one using the lifetime declared by its `[SwarmToolProvider(ServiceLifetime.X)]` attribute, so there's no separate DI registration step (manual registrations always win).
 
 The `[SwarmTool]` and `[SwarmToolProvider]` attributes and `ICustomToolProvider` live in `Swarmwright.Abstractions.Tools`; the `CustomToolProvider` base class lives in `Swarmwright.Tools`.
 
@@ -407,12 +407,12 @@ Example (from `Swarmwright.Templates.MicrosoftDeepResearch`):
 
 ### Consumer wiring
 
-Consumers install the package and add one line during host setup, on the configuration builder, before registering the swarm (`AddAISwarm`):
+Consumers install the package and add one line during host setup, on the configuration builder, before registering the swarm (`AddSwarmwright`):
 
 ```csharp
 builder.Configuration.AddSwarmTemplatePackages();
 // ...
-builder.Services.AddAISwarm(builder.Configuration, builder.Environment);
+builder.Services.AddSwarmwright(builder.Configuration, builder.Environment);
 ```
 
 `AddSwarmTemplatePackages()` is defined in [`Swarmwright.Extensions.ConfigurationBuilderExtensions`](../src/Swarmwright/Extensions/ConfigurationBuilderExtensions.cs). It globs the content root (default `AppContext.BaseDirectory`) for `appsettings.swarm-*.json` sidecars (plus environment-specific `appsettings.swarm-<key>.{Environment}.json` variants) and layers each into the configuration pipeline. The template files themselves are copied into `{bin}/templates/<template-key>/` automatically by the NuGet content-file machinery, where the existing `TemplateLoader` picks them up.

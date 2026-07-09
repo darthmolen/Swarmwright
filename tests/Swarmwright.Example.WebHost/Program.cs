@@ -35,7 +35,7 @@ if (!string.IsNullOrWhiteSpace(openAiEndpoint))
 }
 else
 {
-    builder.Services.AddAISwarm(builder.Configuration, builder.Environment);
+    builder.Services.AddSwarmwright(builder.Configuration, builder.Environment);
 }
 
 // Entra ID (Azure AD) authentication. When the AzureAd section is populated — e.g. via

@@ -84,6 +84,7 @@ and [template-custom-tools.md](template-custom-tools.md) for adding domain-speci
 | Doc | Purpose |
 | --- | --- |
 | [swarm.md](swarm.md) | **Start here.** Program.cs integration, configuration schema (OpenAI/Azure OpenAI, DB, concurrency), work-directory isolation, auth policies, HTTP endpoints for create/monitor/control. |
+| [abstractions.md](abstractions.md) | The abstraction layer — the `IChatClient` model seam, persistence and extension points, and what a thin adapter has to implement. |
 | [template.md](template.md) | Authoring swarm templates — directory layout, YAML metadata, leader/worker prompts, tool resolution, task dependencies (`blockedByIndices`), and placeholder substitution. |
 | [template-custom-tools.md](template-custom-tools.md) | Writing custom domain-specific tools (database queries, HTTP APIs, business logic) and registering them with the framework for use in your own templates. |
 | [mcp-server.md](mcp-server.md) | The Swarm MCP server — swarm operations exposed as MCP tools over HTTP, including the recovery surface (`continue_swarm`, `smart_continue_swarm`, `force_synthesis_swarm`, `mark_swarm_awaiting_intervention`, `get_swarm_recommendation`). Auth modes (None / ApiKey / AzureAD) and turn-based polling patterns for external agents. |

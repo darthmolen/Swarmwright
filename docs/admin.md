@@ -25,7 +25,7 @@ adds authentication plus the SPA configuration options:
 ```csharp
 using Swarmwright.Extensions;
 
-builder.Services.AddAISwarm(builder.Configuration, builder.Environment);
+builder.Services.AddSwarmwright(builder.Configuration, builder.Environment);
 
 var authEnabled = !string.IsNullOrWhiteSpace(builder.Configuration["AzureAd:ClientId"])
     && !string.IsNullOrWhiteSpace(builder.Configuration["AzureAd:TenantId"]);
