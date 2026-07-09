@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+    <Description>Swarmwright template package: "deep-research" — a general-purpose multi-angle research team (primary researcher, skeptic, data analyst). Adds the template files and a sidecar appsettings.swarm-deep-research.json to the consumer's output. Use Swarmwright.Extensions.ConfigurationBuilderExtensions.AddSwarmTemplatePackages() during host setup to layer the sidecar into configuration.</Description>
+    <PackageTags>swarmwright;swarm;template;research;ai-agent</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="templates\**\*"
+             Pack="true"
+             PackagePath="contentFiles\any\any\templates"
+             BuildAction="None"
+             PackageCopyToOutput="true"
+             CopyToOutputDirectory="PreserveNewest">
+      <TargetPath>templates\%(RecursiveDir)%(Filename)%(Extension)</TargetPath>
+    </Content>
+    <Content Include="appsettings.swarm-*.json"
+             Pack="true"
+             PackagePath="contentFiles\any\any"
+             BuildAction="None"
+             PackageCopyToOutput="true"
+             CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

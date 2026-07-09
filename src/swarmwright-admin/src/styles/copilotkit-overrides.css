@@ -1,0 +1,109 @@
+/* CopilotKit theme overrides — match swarm admin dark theme.
+ *
+ * NOTE on CopilotKit's var naming (counter-intuitive):
+ *   --copilot-kit-primary-color          = TEXT/FOREGROUND color (not brand accent)
+ *   --copilot-kit-contrast-color         = BACKGROUND color of primary surfaces (send button, etc.)
+ *   --copilot-kit-background-color       = main page background
+ *   --copilot-kit-secondary-color        = card/panel elevated surface background
+ *   --copilot-kit-secondary-contrast-color = primary text color in main content (message text)
+ *   --copilot-kit-input-background-color = chat input background
+ *   --copilot-kit-separator-color        = borders/dividers
+ *   --copilot-kit-muted-color            = disabled/placeholder text
+ */
+
+.copilot-chat,
+.copilot-chat * {
+  --copilot-kit-primary-color: #e2e8f0;             /* text on dark */
+  --copilot-kit-contrast-color: #0f172a;            /* bg of primary surfaces (button fill) */
+  --copilot-kit-background-color: #0f172a;          /* main bg */
+  --copilot-kit-secondary-color: #1e293b;           /* panel bg */
+  --copilot-kit-secondary-contrast-color: #e2e8f0;  /* message text color */
+  --copilot-kit-input-background-color: #1e293b;    /* input bg */
+  --copilot-kit-separator-color: #334155;           /* borders */
+  --copilot-kit-muted-color: #64748b;               /* placeholder/muted */
+}
+
+.copilot-chat {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  border: none;
+  border-radius: 0;
+  font-family: inherit;
+  background: #0f172a;
+  color: #e2e8f0;
+}
+
+/* Messages area scrolls internally; Input stays pinned at the bottom. */
+.copilot-chat > div {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.copilot-chat .copilotKitMessages {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+/* Force readable text color on every message bubble / body region */
+.copilot-chat .copilotKitMessage,
+.copilot-chat .copilotKitAssistantMessage,
+.copilot-chat .copilotKitUserMessage,
+.copilot-chat .copilotKitInput,
+.copilot-chat .copilotKitInput textarea,
+.copilot-chat textarea,
+.copilot-chat input {
+  color: #e2e8f0;
+  background-color: #1e293b;
+}
+
+.copilot-chat textarea::placeholder,
+.copilot-chat input::placeholder {
+  color: #64748b;
+}
+
+/* Agent selector pills */
+.agent-selector {
+  display: flex;
+  gap: 6px;
+  padding: 8px 12px;
+  border-bottom: 1px solid #1e293b;
+  background: #0f172a;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.agent-pill {
+  padding: 4px 12px;
+  border-radius: 12px;
+  border: 1px solid #374151;
+  background: #1e293b;
+  color: #94a3b8;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.agent-pill:hover {
+  background: #334155;
+  color: #e2e8f0;
+}
+
+.agent-pill--active {
+  background: #3b82f6;
+  border-color: #3b82f6;
+  color: #fff;
+}
+
+.chat-unavailable {
+  padding: 24px 16px;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 13px;
+  background: #0f172a;
+  border-top: 1px solid #1e293b;
+}

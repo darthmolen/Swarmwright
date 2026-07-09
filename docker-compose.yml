@@ -1,0 +1,81 @@
+# Local-dev stack for Swarmwright.
+# Values are interpolated from .env (see .env.example); every variable also has an inline
+# default, so `docker compose up` works even without a .env file.
+#
+# Default `docker compose up` starts ONLY postgres (optional — the app defaults to the InMemory
+# provider). The vLLM model server is opt-in behind the `gpu` profile:
+#   docker compose --profile gpu up -d
+name: swarmwright
+
+services:
+  # PostgreSQL for the EF Core "PostgreSQL" provider (optional; the app defaults to InMemory).
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-swarmwright}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-swarmwright}
+      POSTGRES_DB: ${POSTGRES_DB:-swarmwright}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - swarmwright
+    healthcheck:
+      # $$ escapes to a literal $, so POSTGRES_USER is read from the container's env at runtime.
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-swarmwright}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # vLLM OpenAI-compatible server (opt-in via the `gpu` profile).
+  #
+  # Blackwell / RTX 5090 (sm_120) caveat:
+  #   Pre-built vllm/vllm-openai images may NOT include sm_120 kernels and can
+  #   fail to start on a 5090. If so, override VLLM_IMAGE in .env with a
+  #   from-source build (CUDA 12.8+). VLLM_FLASH_ATTN_VERSION=2 is set below.
+  vllm:
+    image: ${VLLM_IMAGE:-vllm/vllm-openai:latest}
+    profiles:
+      - gpu
+    command:
+      - "--model"
+      - "${VLLM_MODEL:-Qwen/Qwen2.5-7B-Instruct}"
+      - "--served-model-name"
+      - "${VLLM_MODEL:-Qwen/Qwen2.5-7B-Instruct}"
+      - "--max-model-len"
+      - "${VLLM_MAX_MODEL_LEN:-32768}"
+      - "--enable-auto-tool-choice"
+      - "--tool-call-parser"
+      - "hermes"
+    ports:
+      - "${VLLM_PORT:-8000}:8000"
+    ipc: host
+    environment:
+      HUGGING_FACE_HUB_TOKEN: ${HUGGING_FACE_HUB_TOKEN:-}
+      VLLM_FLASH_ATTN_VERSION: "2"
+    volumes:
+      - hfcache:/root/.cache/huggingface
+    networks:
+      - swarmwright
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/v1/models || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 40
+      start_period: 120s
+
+networks:
+  swarmwright:
+    driver: bridge
+
+volumes:
+  pgdata:
+  hfcache:

@@ -1,0 +1,64 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>Swarmwright core: framework-agnostic multi-agent swarm orchestration engine — orchestrator, state machine, EF Core persistence, tools, templates, events, intervention, refinement, telemetry, and run archival, with an in-process channel-based notification pipeline.</Description>
+  </PropertyGroup>
+
+  <ItemGroup Label="Microsoft.Extensions hosting/DI/config (no ASP.NET dependency)">
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
+    <PackageReference Include="Microsoft.Extensions.Http" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
+    <PackageReference Include="Microsoft.Extensions.AI" />
+    <PackageReference Include="ModelContextProtocol" />
+    <PackageReference Include="YamlDotNet" />
+    <PackageReference Include="Azure.Identity" />
+    <PackageReference Include="Azure.Storage.Blobs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Swarmwright.Abstractions\Swarmwright.Abstractions.csproj" />
+    <ProjectReference Include="..\Swarmwright.MicrosoftAgentFramework\Swarmwright.MicrosoftAgentFramework.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Swarmwright.AspNetCore" />
+    <InternalsVisibleTo Include="Swarmwright.Tests" />
+    <InternalsVisibleTo Include="Swarmwright.Integration.Tests" />
+    <InternalsVisibleTo Include="Swarmwright.Workflows.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <!--
+    Shared swarm-template system preamble. TemplateLoader reads it from
+    {templatesDirectory}/system-prompt.md (one level above each template key).
+    Shipped with the core Swarm package so every downstream consumer gets the
+    default preamble alongside any template packages they install.
+  -->
+  <ItemGroup>
+    <None Include="Content\system-prompt.md">
+      <Pack>true</Pack>
+      <PackagePath>contentFiles\any\any\templates\system-prompt.md</PackagePath>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <BuildAction>None</BuildAction>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>templates\system-prompt.md</Link>
+    </None>
+  </ItemGroup>
+
+</Project>

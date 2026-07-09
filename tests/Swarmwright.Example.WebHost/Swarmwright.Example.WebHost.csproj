@@ -1,0 +1,62 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <!-- App host, not a library: top-level statements are intentional (IDE0211); minimal-hosting
+         Program is implicitly accessible to WebApplicationFactory in .NET 10 (no partial needed). -->
+    <NoWarn>$(NoWarn);CS1591;CA1515;IDE0211;ASP0027</NoWarn>
+    <!-- Enables `dotnet user-secrets` for this host (loaded in the Development environment). Populate
+         from .env with scripts/set-user-secrets.ps1. -->
+    <UserSecretsId>77978fd1-167b-4122-9e18-4d422e1ddfc9</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Serilog.AspNetCore" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Swarmwright.AspNetCore\Swarmwright.AspNetCore.csproj" />
+    <ProjectReference Include="..\..\src\Swarmwright.Templates.DeepResearch\Swarmwright.Templates.DeepResearch.csproj" />
+    <ProjectReference Include="..\..\src\Swarmwright.Templates.AzureSolutionsAgent\Swarmwright.Templates.AzureSolutionsAgent.csproj" />
+    <ProjectReference Include="..\..\src\Swarmwright.Templates.MicrosoftDeepResearch\Swarmwright.Templates.MicrosoftDeepResearch.csproj" />
+  </ItemGroup>
+
+  <!-- Admin SPA (swarmwright-admin) built via Vite and embedded as static web assets served from
+       wwwroot. MSBuild-integrated: the SPA is (re)built on demand and copied into wwwroot, which the
+       Web SDK serves automatically. Incremental — npm only re-runs when SPA sources change. C#-only
+       or no-node environments can skip the SPA build with -p:SkipSpaBuild=true. -->
+  <PropertyGroup>
+    <SpaRoot>$(MSBuildProjectDirectory)\..\..\src\swarmwright-admin\</SpaRoot>
+    <SpaDist>$(SpaRoot)dist\</SpaDist>
+    <SpaWwwroot>$(MSBuildProjectDirectory)\wwwroot\</SpaWwwroot>
+    <SkipSpaBuild Condition="'$(SkipSpaBuild)' == ''">false</SkipSpaBuild>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(SkipSpaBuild)' != 'true'">
+    <SpaSource Include="$(SpaRoot)src\**\*;$(SpaRoot)index.html;$(SpaRoot)package.json;$(SpaRoot)vite.config.ts" Exclude="$(SpaRoot)node_modules\**" />
+  </ItemGroup>
+
+  <Target Name="EnsureSpaDependencies"
+          Condition="'$(SkipSpaBuild)' != 'true' and !Exists('$(SpaRoot)node_modules')">
+    <Message Importance="high" Text="swarmwright-admin: installing npm dependencies..." />
+    <Exec Command="npm ci" WorkingDirectory="$(SpaRoot)" />
+  </Target>
+
+  <Target Name="BuildSpa"
+          BeforeTargets="BeforeBuild;BeforePublish"
+          DependsOnTargets="EnsureSpaDependencies"
+          Condition="'$(SkipSpaBuild)' != 'true'"
+          Inputs="@(SpaSource)"
+          Outputs="$(SpaDist)index.html">
+    <Message Importance="high" Text="swarmwright-admin: building Vite SPA..." />
+    <Exec Command="npm run build" WorkingDirectory="$(SpaRoot)" />
+    <ItemGroup>
+      <_SpaArtifacts Include="$(SpaDist)**\*" />
+    </ItemGroup>
+    <RemoveDir Directories="$(SpaWwwroot)" />
+    <Copy SourceFiles="@(_SpaArtifacts)"
+          DestinationFiles="@(_SpaArtifacts->'$(SpaWwwroot)%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true" />
+  </Target>
+
+</Project>

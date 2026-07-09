@@ -1,0 +1,5 @@
+key: deep-research
+name: Deep Research Team
+description: A research team that investigates topics from multiple angles
+goal_template: |
+  Assemble a deep research team to: {user_input}

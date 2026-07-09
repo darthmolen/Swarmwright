@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+    <Description>Swarmwright template package: "azure-solutions-agent" — deep-research Azure solutions architect swarm with cost-optimization approval gate and Bicep/Terraform IaC output. Ships six workers (architect, security, ai-ml, cost-expert, iac-architect, iac-developer), composable skills, and a sidecar appsettings.swarm-azure-solutions-agent.json that contributes the learn-microsoft MCP endpoint. Use Swarmwright.Extensions.ConfigurationBuilderExtensions.AddSwarmTemplatePackages() during host setup to layer the sidecar into configuration.</Description>
+    <PackageTags>swarmwright;swarm;template;azure;architecture;iac;bicep;terraform;ai-agent</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="templates\**\*"
+             Pack="true"
+             PackagePath="contentFiles\any\any\templates"
+             BuildAction="None"
+             PackageCopyToOutput="true"
+             CopyToOutputDirectory="PreserveNewest">
+      <TargetPath>templates\%(RecursiveDir)%(Filename)%(Extension)</TargetPath>
+    </Content>
+    <Content Include="appsettings.swarm-*.json"
+             Pack="true"
+             PackagePath="contentFiles\any\any"
+             BuildAction="None"
+             PackageCopyToOutput="true"
+             CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>
